@@ -216,6 +216,25 @@
             margin-bottom: 25px;
             padding-bottom: 12px;
             border-bottom: 3px solid #1e3a8a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .edit-course-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: background 0.2s ease;
+        }
+
+        .edit-course-btn:hover {
+            background: #2563eb;
         }
 
         .lecture-header {
@@ -246,11 +265,6 @@
             box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
         }
 
-        .lecture.unavailable {
-            opacity: 0.6;
-            background: #f1f5f9;
-        }
-
         .lecture-content {
             flex: 1;
         }
@@ -261,52 +275,6 @@
             font-weight: 500;
             margin-bottom: 6px;
             line-height: 1.5;
-        }
-
-        .lecture-info {
-            font-size: 13px;
-            color: #64748b;
-            font-style: italic;
-        }
-
-        .lecture.unavailable .lecture-info {
-            color: #ef4444;
-        }
-
-        .pdf-badge {
-            display: inline-block;
-            background: #3b82f6;
-            color: white;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 600;
-            margin-left: 8px;
-            text-decoration: none;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
-            margin-left: 10px;
-        }
-
-        .badge-available {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .badge-unavailable {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .badge-coming-soon {
-            background: #fef3c7;
-            color: #92400e;
         }
 
         .checkbox-cell {
@@ -355,12 +323,6 @@
             content: '✓';
             color: white;
             font-weight: bold;
-        }
-
-        .lecture-number {
-            font-weight: 600;
-            color: #1e3a8a;
-            margin-right: 4px;
         }
 
         .action-buttons {
@@ -515,11 +477,6 @@
             width: 18px;
             height: 18px;
             cursor: pointer;
-        }
-
-        .student-checkbox.checked {
-            background: #eff6ff;
-            border-color: #3b82f6;
         }
 
         .new-student-input {
@@ -769,6 +726,32 @@
             margin-bottom: 10px;
             opacity: 0.5;
         }
+
+        /* 섹션 헤더 스타일 (# 단원 구분) */
+        .section-header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            padding: 20px 25px;
+            margin: 30px 0 15px 0;
+            border-radius: 12px;
+            font-weight: bold;
+        }
+
+        .section-header.level-1 {
+            font-size: 22px;
+        }
+
+        .section-header.level-2 {
+            background: linear-gradient(135deg, #2563eb 0%, #60a5fa 100%);
+            font-size: 18px;
+            padding: 15px 20px;
+        }
+
+        .section-header.level-3 {
+            background: linear-gradient(135deg, #3b82f6 0%, #93c5fd 100%);
+            font-size: 16px;
+            padding: 12px 18px;
+        }
     </style>
 </head>
 <body>
@@ -786,498 +769,16 @@
         <!-- 강의 진도 섹션 -->
         <div class="main-content active" id="lectures-content">
             <div class="course-tabs">
-                <button class="course-tab active" onclick="switchCourse(0)">Cognitive Neuroscience</button>
+                <button class="course-tab active" onclick="switchCourse(0)" data-course-id="0">Cognitive Neuroscience</button>
                 <button class="add-course-btn" onclick="openAddCourseModal()">+ 강의 추가</button>
             </div>
 
-            <!-- Course 0: Cognitive Neuroscience -->
-            <div class="course-content active" data-course="0">
-                <div class="stats-container">
-                    <div class="stats-grid">
-                        <div class="user-stats">
-                            <h3>서정 📖</h3>
-                            <div class="stats-row">
-                                <div class="stat">
-                                    <div class="stat-number" id="서정-completed-0">0</div>
-                                    <div class="stat-label">완료</div>
-                                </div>
-                                <div class="stat">
-                                    <div class="stat-number" id="서정-progress-count-0">0</div>
-                                    <div class="stat-label">진행중</div>
-                                </div>
-                                <div class="stat">
-                                    <div class="stat-number" id="서정-total-0">0</div>
-                                    <div class="stat-label">전체</div>
-                                </div>
-                                <div class="stat">
-                                    <div class="stat-number" id="서정-percent-0">0%</div>
-                                    <div class="stat-label">진행률</div>
-                                </div>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" id="서정-progress-bar-0"></div>
-                            </div>
-                        </div>
-
-                        <div class="user-stats">
-                            <h3>예빈 📖</h3>
-                            <div class="stats-row">
-                                <div class="stat">
-                                    <div class="stat-number" id="예빈-completed-0">0</div>
-                                    <div class="stat-label">완료</div>
-                                </div>
-                                <div class="stat">
-                                    <div class="stat-number" id="예빈-progress-count-0">0</div>
-                                    <div class="stat-label">진행중</div>
-                                </div>
-                                <div class="stat">
-                                    <div class="stat-number" id="예빈-total-0">0</div>
-                                    <div class="stat-label">전체</div>
-                                </div>
-                                <div class="stat">
-                                    <div class="stat-number" id="예빈-percent-0">0%</div>
-                                    <div class="stat-label">진행률</div>
-                                </div>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" id="예빈-progress-bar-0"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="content-wrapper">
-                    <div class="section-title">Lecture Notes</div>
-
-                    <div class="legend">
-                        <div class="legend-item">
-                            <div class="legend-icon empty"></div>
-                            <span>미완료</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-icon progress">→</div>
-                            <span>진행중</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-icon done">✓</div>
-                            <span>완료</span>
-                        </div>
-                        <div class="legend-item" style="margin-left: auto; color: #64748b;">
-                            <span>클릭: 미완료 → 진행중 → 완료 → 미완료</span>
-                        </div>
-                    </div>
-
-                    <div class="lecture-header">
-                        <div>강의</div>
-                        <div style="text-align: center;">서정</div>
-                        <div style="text-align: center;">예빈</div>
-                    </div>
-
-                    <div class="lecture" data-lecture="available">
-                        <div class="lecture-content">
-                            <div class="lecture-title">
-                                <span class="lecture-number">Lecture 1:</span> Introduction
-                                <a href="#" class="pdf-badge">PDF</a>
-                                <span class="status-badge badge-available">자료 있음</span>
-                            </div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="서정" data-lecture-id="lecture-1"></div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="예빈" data-lecture-id="lecture-1"></div>
-                        </div>
-                    </div>
-
-                    <div class="lecture" data-lecture="available">
-                        <div class="lecture-content">
-                            <div class="lecture-title">
-                                <span class="lecture-number">Lecture 2:</span> Neuroanatomy
-                                <a href="#" class="pdf-badge">PDF - 1.6MB</a>
-                                <span class="status-badge badge-available">자료 있음</span>
-                            </div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="서정" data-lecture-id="lecture-2"></div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="예빈" data-lecture-id="lecture-2"></div>
-                        </div>
-                    </div>
-
-                    <div class="lecture unavailable" data-lecture="unavailable">
-                        <div class="lecture-content">
-                            <div class="lecture-title">
-                                <span class="lecture-number">Lecture 3:</span> Master Class: Human Brain Dissection
-                            </div>
-                            <div class="lecture-info">(in-class dissection—video not recorded; lecture notes not provided)</div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="서정" data-lecture-id="lecture-3"></div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="예빈" data-lecture-id="lecture-3"></div>
-                        </div>
-                    </div>
-
-                    <div class="lecture" data-lecture="available">
-                        <div class="lecture-content">
-                            <div class="lecture-title">
-                                <span class="lecture-number">Lecture 4:</span> Cognitive Neuroscience Methods I
-                                <a href="#" class="pdf-badge">PDF - 4.2MB</a>
-                                <span class="status-badge badge-available">자료 있음</span>
-                            </div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="서정" data-lecture-id="lecture-4"></div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="예빈" data-lecture-id="lecture-4"></div>
-                        </div>
-                    </div>
-
-                    <div class="lecture" data-lecture="available">
-                        <div class="lecture-content">
-                            <div class="lecture-title">
-                                <span class="lecture-number">Lecture 5:</span> Cognitive Neuroscience Methods II
-                                <a href="#" class="pdf-badge">PDF - 1.5MB</a>
-                                <span class="status-badge badge-available">자료 있음</span>
-                            </div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="서정" data-lecture-id="lecture-5"></div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="예빈" data-lecture-id="lecture-5"></div>
-                        </div>
-                    </div>
-
-                    <div class="lecture" data-lecture="available">
-                        <div class="lecture-content">
-                            <div class="lecture-title">
-                                <span class="lecture-number">Lecture 6:</span> Experimental Design
-                                <a href="#" class="pdf-badge">PDF - 1.1MB</a>
-                                <span class="status-badge badge-available">자료 있음</span>
-                            </div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="서정" data-lecture-id="lecture-6"></div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="예빈" data-lecture-id="lecture-6"></div>
-                        </div>
-                    </div>
-
-                    <div class="lecture" data-lecture="available">
-                        <div class="lecture-content">
-                            <div class="lecture-title">
-                                <span class="lecture-number">Lecture 7:</span> Category Selectivity, Controversies, and MVPA
-                                <a href="#" class="pdf-badge">PDF - 1.3MB</a>
-                                <span class="status-badge badge-available">자료 있음</span>
-                            </div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="서정" data-lecture-id="lecture-7"></div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="예빈" data-lecture-id="lecture-7"></div>
-                        </div>
-                    </div>
-
-                    <div class="lecture" data-lecture="available">
-                        <div class="lecture-content">
-                            <div class="lecture-title">
-                                <span class="lecture-number">Lecture 8:</span> Navigation I
-                                <a href="#" class="pdf-badge">PDF - 2.3MB</a>
-                                <span class="status-badge badge-available">자료 있음</span>
-                            </div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="서정" data-lecture-id="lecture-8"></div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="예빈" data-lecture-id="lecture-8"></div>
-                        </div>
-                    </div>
-
-                    <div class="lecture" data-lecture="available">
-                        <div class="lecture-content">
-                            <div class="lecture-title">
-                                <span class="lecture-number">Lecture 9:</span> Navigation II
-                                <a href="#" class="pdf-badge">PDF - 2.3MB</a>
-                                <span class="status-badge badge-available">자료 있음</span>
-                            </div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="서정" data-lecture-id="lecture-9"></div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="예빈" data-lecture-id="lecture-9"></div>
-                        </div>
-                    </div>
-
-                    <div class="lecture" data-lecture="available">
-                        <div class="lecture-content">
-                            <div class="lecture-title">
-                                <span class="lecture-number">Lecture 10:</span> Development, Nature & Nurture I
-                                <a href="#" class="pdf-badge">PDF - 2.2MB</a>
-                                <span class="status-badge badge-available">자료 있음</span>
-                            </div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="서정" data-lecture-id="lecture-10"></div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="예빈" data-lecture-id="lecture-10"></div>
-                        </div>
-                    </div>
-
-                    <div class="lecture" data-lecture="available">
-                        <div class="lecture-content">
-                            <div class="lecture-title">
-                                <span class="lecture-number">Lecture 11:</span> Development, Nature & Nurture II (2018)
-                                <a href="#" class="pdf-badge">PDF - 1.6MB</a>
-                                <span class="status-badge badge-available">자료 있음</span>
-                            </div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="서정" data-lecture-id="lecture-11"></div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="예빈" data-lecture-id="lecture-11"></div>
-                        </div>
-                    </div>
-
-                    <div class="lecture unavailable" data-lecture="unavailable">
-                        <div class="lecture-content">
-                            <div class="lecture-title">
-                                <span class="lecture-number">Lecture 12:</span> Brain-Machine Interface
-                            </div>
-                            <div class="lecture-info">(video unavailable; lecture notes not provided)</div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="서정" data-lecture-id="lecture-12"></div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="예빈" data-lecture-id="lecture-12"></div>
-                        </div>
-                    </div>
-
-                    <div class="lecture" data-lecture="available">
-                        <div class="lecture-content">
-                            <div class="lecture-title">
-                                <span class="lecture-number">Lecture 13:</span> Number
-                                <a href="#" class="pdf-badge">PDF - 2MB</a>
-                                <span class="status-badge badge-available">자료 있음</span>
-                            </div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="서정" data-lecture-id="lecture-13"></div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="예빈" data-lecture-id="lecture-13"></div>
-                        </div>
-                    </div>
-
-                    <div class="lecture unavailable" data-lecture="unavailable">
-                        <div class="lecture-content">
-                            <div class="lecture-title">
-                                <span class="lecture-number">Lecture 14:</span> New Methods Applied to Number
-                            </div>
-                            <div class="lecture-info">(student breakout groups—video not recorded; lecture notes not provided)</div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="서정" data-lecture-id="lecture-14"></div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="예빈" data-lecture-id="lecture-14"></div>
-                        </div>
-                    </div>
-
-                    <div class="lecture" data-lecture="available">
-                        <div class="lecture-content">
-                            <div class="lecture-title">
-                                <span class="lecture-number">Lecture 15:</span> Hearing and Speech
-                                <a href="#" class="pdf-badge">PDF - 1.6MB</a>
-                                <span class="status-badge badge-available">자료 있음</span>
-                            </div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="서정" data-lecture-id="lecture-15"></div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="예빈" data-lecture-id="lecture-15"></div>
-                        </div>
-                    </div>
-
-                    <div class="lecture" data-lecture="available">
-                        <div class="lecture-content">
-                            <div class="lecture-title">
-                                <span class="lecture-number">Lecture 16:</span> Music
-                                <a href="#" class="pdf-badge">PDF - 4.6MB</a>
-                                <span class="status-badge badge-available">자료 있음</span>
-                            </div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="서정" data-lecture-id="lecture-16"></div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="예빈" data-lecture-id="lecture-16"></div>
-                        </div>
-                    </div>
-
-                    <div class="lecture unavailable" data-lecture="unavailable">
-                        <div class="lecture-content">
-                            <div class="lecture-title">
-                                <span class="lecture-number">Lecture 17:</span> MEG Decoding and RSA
-                            </div>
-                            <div class="lecture-info">(video not recorded; lecture notes not provided)</div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="서정" data-lecture-id="lecture-17"></div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="예빈" data-lecture-id="lecture-17"></div>
-                        </div>
-                    </div>
-
-                    <div class="lecture" data-lecture="available">
-                        <div class="lecture-content">
-                            <div class="lecture-title">
-                                <span class="lecture-number">Lecture 18:</span> Language I
-                                <a href="#" class="pdf-badge">PDF - 1.7MB</a>
-                                <span class="status-badge badge-available">자료 있음</span>
-                            </div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="서정" data-lecture-id="lecture-18"></div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="예빈" data-lecture-id="lecture-18"></div>
-                        </div>
-                    </div>
-
-                    <div class="lecture unavailable" data-lecture="unavailable">
-                        <div class="lecture-content">
-                            <div class="lecture-title">
-                                <span class="lecture-number">Lecture 19:</span> Language II
-                            </div>
-                            <div class="lecture-info">(class canceled—video not recorded; lecture notes not provided)</div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="서정" data-lecture-id="lecture-19"></div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="예빈" data-lecture-id="lecture-19"></div>
-                        </div>
-                    </div>
-
-                    <div class="lecture" data-lecture="available">
-                        <div class="lecture-content">
-                            <div class="lecture-title">
-                                <span class="lecture-number">Lecture 20:</span> Mentalizing and Theory of Mind
-                                <a href="#" class="pdf-badge">PDF - 6.3MB</a>
-                                <span class="status-badge badge-available">자료 있음</span>
-                            </div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="서정" data-lecture-id="lecture-20"></div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="예빈" data-lecture-id="lecture-20"></div>
-                        </div>
-                    </div>
-
-                    <div class="lecture" data-lecture="available">
-                        <div class="lecture-content">
-                            <div class="lecture-title">
-                                <span class="lecture-number">Lecture 21:</span> Brain Networks
-                                <a href="#" class="pdf-badge">PDF - 3.1MB</a>
-                                <span class="status-badge badge-available">자료 있음</span>
-                            </div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="서정" data-lecture-id="lecture-21"></div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="예빈" data-lecture-id="lecture-21"></div>
-                        </div>
-                    </div>
-
-                    <div class="lecture unavailable" data-lecture="unavailable">
-                        <div class="lecture-content">
-                            <div class="lecture-title">
-                                <span class="lecture-number">Lecture 22:</span> Experimental Design
-                            </div>
-                            <div class="lecture-info">(student breakout groups—video not recorded; lecture notes not provided)</div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="서정" data-lecture-id="lecture-22"></div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="예빈" data-lecture-id="lecture-22"></div>
-                        </div>
-                    </div>
-
-                    <div class="lecture coming-soon" data-lecture="coming-soon">
-                        <div class="lecture-content">
-                            <div class="lecture-title">
-                                <span class="lecture-number">Lecture 23:</span> Deep Networks (2021)
-                                <span class="status-badge badge-coming-soon">곧 추가 예정</span>
-                            </div>
-                            <div class="lecture-info" style="color: #92400e;">(video and notes for this lecture will be added soon)</div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="서정" data-lecture-id="lecture-23"></div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="예빈" data-lecture-id="lecture-23"></div>
-                        </div>
-                    </div>
-
-                    <div class="lecture" data-lecture="available">
-                        <div class="lecture-content">
-                            <div class="lecture-title">
-                                <span class="lecture-number">Lecture 24:</span> Attention and Awareness
-                                <a href="#" class="pdf-badge">PDF - 2.8MB</a>
-                                <span class="status-badge badge-available">자료 있음</span>
-                            </div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="서정" data-lecture-id="lecture-24"></div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="예빈" data-lecture-id="lecture-24"></div>
-                        </div>
-                    </div>
-
-                    <div class="lecture unavailable" data-lecture="unavailable">
-                        <div class="lecture-content">
-                            <div class="lecture-title">
-                                <span class="lecture-number">Lecture 25:</span> Recap of Course & Final Review
-                            </div>
-                            <div class="lecture-info">(video not recorded; lecture notes not provided)</div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="서정" data-lecture-id="lecture-25"></div>
-                        </div>
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="예빈" data-lecture-id="lecture-25"></div>
-                        </div>
-                    </div>
-
-                    <div class="action-buttons">
-                        <button class="btn btn-reset" onclick="resetCourseProgress(0, '서정')">서정 진도 초기화</button>
-                        <button class="btn btn-reset" onclick="resetCourseProgress(0, '예빈')">예빈 진도 초기화</button>
-                        <button class="btn btn-delete" onclick="deleteCourse(0)">이 강의 삭제</button>
-                    </div>
-                </div>
-            </div>
+            <!-- Course 콘텐츠는 동적으로 생성됨 -->
         </div>
 
         <!-- 할 일 섹션 -->
         <div class="main-content" id="todos-content">
-            <div class="todo-container">
+            <div class="todo-container" id="todo-container">
                 <div class="todo-section">
                     <div class="todo-header">
                         <h3>✏️ 서정의 할 일</h3>
@@ -1307,10 +808,10 @@
         </div>
     </div>
 
-    <!-- 강의 추가 모달 -->
-    <div class="modal" id="addCourseModal">
+    <!-- 강의 추가/수정 모달 -->
+    <div class="modal" id="courseModal">
         <div class="modal-content">
-            <h2>새 강의 추가</h2>
+            <h2 id="courseModalTitle">새 강의 추가</h2>
             
             <div class="form-group">
                 <label>강의 이름</label>
@@ -1320,14 +821,7 @@
             <div class="form-group">
                 <label>수강자 선택</label>
                 <div class="students-selector" id="studentsSelector">
-                    <label class="student-checkbox">
-                        <input type="checkbox" value="서정" checked>
-                        <span>서정</span>
-                    </label>
-                    <label class="student-checkbox">
-                        <input type="checkbox" value="예빈" checked>
-                        <span>예빈</span>
-                    </label>
+                    <!-- 동적 생성 -->
                 </div>
                 <div class="new-student-input">
                     <input type="text" id="newStudentName" placeholder="새 수강자 이름">
@@ -1337,26 +831,62 @@
             </div>
 
             <div class="form-group">
-                <label>강의 목록 (한 줄에 하나씩)</label>
-                <textarea id="courseLectures" placeholder="Lecture 1: Introduction&#10;Lecture 2: Neurons and Brain&#10;Lecture 3: Sensation and Perception"></textarea>
-                <div class="help-text">각 강의를 한 줄에 하나씩 입력하세요</div>
+                <label>강의 목록</label>
+                <textarea id="courseLectures" placeholder="강의를 한 줄에 하나씩 입력하세요.&#10;&#10;# 큰 단원 (파란색 배경)&#10;## 중간 단원 (하늘색 배경)&#10;### 작은 단원 (연한 파란색 배경)&#10;&#10;예시:&#10;# PART 1 기초&#10;## Chapter 1 시작하기&#10;Lecture 1: Introduction&#10;Lecture 2: Basics&#10;## Chapter 2 심화&#10;Lecture 3: Advanced Topics"></textarea>
+                <div class="help-text">
+                    • 한 줄에 하나씩 입력<br>
+                    • # = 대단원, ## = 중단원, ### = 소단원 (제목만 표시, 체크 불가)<br>
+                    • 일반 텍스트 = 강의 (체크 가능)
+                </div>
             </div>
 
             <div class="modal-buttons">
-                <button class="btn btn-secondary" onclick="closeAddCourseModal()">취소</button>
-                <button class="btn btn-primary" onclick="addNewCourse()">추가</button>
+                <button class="btn btn-secondary" onclick="closeCourseModal()">취소</button>
+                <button class="btn btn-primary" onclick="saveCourse()">저장</button>
             </div>
         </div>
     </div>
 
     <script>
         let currentCourse = 0;
-        let courses = JSON.parse(localStorage.getItem('courses')) || [
-            { name: 'Cognitive Neuroscience', id: 0, students: ['서정', '예빈'] }
-        ];
+        let editingCourseId = null;
+        
+        const defaultCognitiveNeuroscience = {
+            name: 'Cognitive Neuroscience',
+            id: 0,
+            students: ['서정', '예빈'],
+            lectures: [
+                'Lecture 1: Introduction',
+                'Lecture 2: Neuroanatomy',
+                'Lecture 3: Master Class: Human Brain Dissection',
+                'Lecture 4: Cognitive Neuroscience Methods I',
+                'Lecture 5: Cognitive Neuroscience Methods II',
+                'Lecture 6: Experimental Design',
+                'Lecture 7: Category Selectivity, Controversies, and MVPA',
+                'Lecture 8: Navigation I',
+                'Lecture 9: Navigation II',
+                'Lecture 10: Development, Nature & Nurture I',
+                'Lecture 11: Development, Nature & Nurture II (2018)',
+                'Lecture 12: Brain-Machine Interface',
+                'Lecture 13: Number',
+                'Lecture 14: New Methods Applied to Number',
+                'Lecture 15: Hearing and Speech',
+                'Lecture 16: Music',
+                'Lecture 17: MEG Decoding and RSA',
+                'Lecture 18: Language I',
+                'Lecture 19: Language II',
+                'Lecture 20: Mentalizing and Theory of Mind',
+                'Lecture 21: Brain Networks',
+                'Lecture 22: Experimental Design',
+                'Lecture 23: Deep Networks (2021)',
+                'Lecture 24: Attention and Awareness',
+                'Lecture 25: Recap of Course & Final Review'
+            ]
+        };
+
+        let courses = JSON.parse(localStorage.getItem('courses')) || [defaultCognitiveNeuroscience];
         let allStudents = JSON.parse(localStorage.getItem('allStudents')) || ['서정', '예빈'];
 
-        // 메인 탭 전환
         function switchMainTab(tab) {
             document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.main-content').forEach(c => c.classList.remove('active'));
@@ -1370,7 +900,6 @@
             }
         }
 
-        // 할 일 입력창 토글
         function toggleTodoInput(user) {
             const inputContainer = document.getElementById(`${user}-input`);
             const input = document.getElementById(`${user}-todo-text`);
@@ -1384,14 +913,12 @@
             }
         }
 
-        // Enter 키로 할 일 추가
         function handleTodoKeyPress(event, user) {
             if (event.key === 'Enter') {
                 addTodo(user);
             }
         }
 
-        // 할 일 추가
         function addTodo(user) {
             const input = document.getElementById(`${user}-todo-text`);
             const text = input.value.trim();
@@ -1409,20 +936,15 @@
                 createdAt: new Date().toISOString()
             };
 
-            // 로컬 스토리지에 저장
             let todos = JSON.parse(localStorage.getItem(`todos_${user}`)) || [];
             todos.push(todo);
             localStorage.setItem(`todos_${user}`, JSON.stringify(todos));
 
-            // UI 업데이트
             renderTodoItem(user, todo);
-
-            // 입력창 초기화
             input.value = '';
             toggleTodoInput(user);
         }
 
-        // 할 일 항목 렌더링
         function renderTodoItem(user, todo) {
             const list = document.getElementById(`${user}-list`);
             
@@ -1440,7 +962,6 @@
             updateEmptyState(user);
         }
 
-        // 할 일 완료/미완료 토글
         function toggleTodo(user, todoId) {
             let todos = JSON.parse(localStorage.getItem(`todos_${user}`)) || [];
             const todo = todos.find(t => t.id === todoId);
@@ -1460,7 +981,6 @@
             }
         }
 
-        // 할 일 삭제
         function deleteTodo(user, todoId) {
             if (!confirm('정말로 이 할 일을 삭제하시겠습니까?')) {
                 return;
@@ -1478,7 +998,6 @@
             updateEmptyState(user);
         }
 
-        // 빈 상태 업데이트
         function updateEmptyState(user) {
             const list = document.getElementById(`${user}-list`);
             const existingEmpty = list.querySelector('.empty-state');
@@ -1500,7 +1019,6 @@
             }
         }
 
-        // 할 일 목록 로드
         function loadTodos() {
             allStudents.forEach(user => {
                 const list = document.getElementById(`${user}-list`);
@@ -1513,9 +1031,8 @@
             });
         }
 
-        // 새 학생 추가 시 할 일 섹션도 추가
         function addTodoSection(student) {
-            const container = document.querySelector('.todo-container');
+            const container = document.getElementById('todo-container');
             const section = document.createElement('div');
             section.className = 'todo-section';
             section.innerHTML = `
@@ -1534,7 +1051,6 @@
             updateEmptyState(student);
         }
 
-        // 상태 순환: null -> 'in-progress' -> 'completed' -> null
         function cycleStatus(element) {
             if (element.classList.contains('completed')) {
                 element.classList.remove('completed');
@@ -1549,7 +1065,6 @@
             }
         }
 
-        // 상태 표시 설정
         function setupStatusIndicators(courseId) {
             const courseContent = document.querySelector(`.course-content[data-course="${courseId}"]`);
             if (!courseContent) return;
@@ -1566,7 +1081,6 @@
             });
         }
 
-        // 진도 저장 (상태 포함)
         function saveProgress(courseId, user, lectureId, status) {
             const key = `course_${courseId}_${user}`;
             let progress = JSON.parse(localStorage.getItem(key)) || {};
@@ -1580,7 +1094,6 @@
             localStorage.setItem(key, JSON.stringify(progress));
         }
 
-        // 진도 불러오기
         function loadProgress(courseId) {
             const courseContent = document.querySelector(`.course-content[data-course="${courseId}"]`);
             if (!courseContent) return;
@@ -1601,7 +1114,6 @@
             });
         }
 
-        // 통계 업데이트
         function updateStats(courseId) {
             const courseContent = document.querySelector(`.course-content[data-course="${courseId}"]`);
             if (!courseContent) return;
@@ -1633,19 +1145,18 @@
             });
         }
 
-        // 강의 전환
         function switchCourse(courseId) {
             currentCourse = courseId;
             
-            // 탭 활성화 상태 변경
-            document.querySelectorAll('.course-tab').forEach((tab, index) => {
+            const tabs = document.querySelectorAll('.course-tab:not(.add-course-btn)');
+            tabs.forEach((tab) => {
                 tab.classList.remove('active');
-                if (index === courseId) {
+                const tabCourseId = parseInt(tab.getAttribute('data-course-id'));
+                if (tabCourseId === courseId) {
                     tab.classList.add('active');
                 }
             });
 
-            // 콘텐츠 표시
             document.querySelectorAll('.course-content').forEach(content => {
                 content.classList.remove('active');
             });
@@ -1655,7 +1166,6 @@
             }
         }
 
-        // 진도 초기화
         function resetCourseProgress(courseId, user) {
             if (confirm(`정말로 ${user}님의 모든 진도를 초기화하시겠습니까?`)) {
                 const key = `course_${courseId}_${user}`;
@@ -1672,7 +1182,6 @@
             }
         }
 
-        // 강의 삭제
         function deleteCourse(courseId) {
             if (courseId === 0) {
                 alert('기본 강의는 삭제할 수 없습니다.');
@@ -1682,30 +1191,25 @@
             if (confirm('정말로 이 강의를 삭제하시겠습니까? 모든 진도 데이터가 삭제됩니다.')) {
                 const course = courses.find(c => c.id === courseId);
                 
-                // 로컬 스토리지에서 진도 데이터 삭제
                 if (course) {
                     course.students.forEach(user => {
                         localStorage.removeItem(`course_${courseId}_${user}`);
                     });
                 }
 
-                // DOM에서 제거
                 const courseContent = document.querySelector(`.course-content[data-course="${courseId}"]`);
-                const courseTab = document.querySelectorAll('.course-tab')[courseId];
+                const courseTab = document.querySelector(`.course-tab[data-course-id="${courseId}"]`);
                 
                 if (courseContent) courseContent.remove();
                 if (courseTab) courseTab.remove();
 
-                // courses 배열에서 제거
                 courses = courses.filter(c => c.id !== courseId);
                 localStorage.setItem('courses', JSON.stringify(courses));
 
-                // 첫 번째 강의로 전환
                 switchCourse(0);
             }
         }
 
-        // 학생 추가
         function addStudent() {
             const newStudentName = document.getElementById('newStudentName').value.trim();
             if (!newStudentName) {
@@ -1721,7 +1225,6 @@
             allStudents.push(newStudentName);
             localStorage.setItem('allStudents', JSON.stringify(allStudents));
 
-            // 체크박스 추가
             const selector = document.getElementById('studentsSelector');
             const label = document.createElement('label');
             label.className = 'student-checkbox';
@@ -1731,15 +1234,16 @@
             `;
             selector.appendChild(label);
 
-            // 할 일 섹션 추가
             addTodoSection(newStudentName);
-
             document.getElementById('newStudentName').value = '';
         }
 
-        // 강의 추가 모달 열기
         function openAddCourseModal() {
-            // 학생 목록 업데이트
+            editingCourseId = null;
+            document.getElementById('courseModalTitle').textContent = '새 강의 추가';
+            document.getElementById('courseName').value = '';
+            document.getElementById('courseLectures').value = '';
+            
             const selector = document.getElementById('studentsSelector');
             selector.innerHTML = '';
             allStudents.forEach(student => {
@@ -1752,22 +1256,43 @@
                 selector.appendChild(label);
             });
 
-            document.getElementById('addCourseModal').classList.add('active');
+            document.getElementById('courseModal').classList.add('active');
         }
 
-        // 강의 추가 모달 닫기
-        function closeAddCourseModal() {
-            document.getElementById('addCourseModal').classList.remove('active');
-            document.getElementById('courseName').value = '';
-            document.getElementById('courseLectures').value = '';
+        function openEditCourseModal(courseId) {
+            editingCourseId = courseId;
+            const course = courses.find(c => c.id === courseId);
+            if (!course) return;
+
+            document.getElementById('courseModalTitle').textContent = '강의 수정';
+            document.getElementById('courseName').value = course.name;
+            document.getElementById('courseLectures').value = course.lectures.join('\n');
+            
+            const selector = document.getElementById('studentsSelector');
+            selector.innerHTML = '';
+            allStudents.forEach(student => {
+                const label = document.createElement('label');
+                label.className = 'student-checkbox';
+                const isChecked = course.students.includes(student);
+                label.innerHTML = `
+                    <input type="checkbox" value="${student}" ${isChecked ? 'checked' : ''}>
+                    <span>${student}</span>
+                `;
+                selector.appendChild(label);
+            });
+
+            document.getElementById('courseModal').classList.add('active');
         }
 
-        // 새 강의 추가
-        function addNewCourse() {
+        function closeCourseModal() {
+            document.getElementById('courseModal').classList.remove('active');
+            editingCourseId = null;
+        }
+
+        function saveCourse() {
             const courseName = document.getElementById('courseName').value.trim();
             const lecturesText = document.getElementById('courseLectures').value.trim();
             
-            // 선택된 학생들
             const selectedStudents = Array.from(document.querySelectorAll('#studentsSelector input[type="checkbox"]:checked'))
                 .map(cb => cb.value);
 
@@ -1792,49 +1317,72 @@
                 return;
             }
 
-            // 새 강의 ID 생성
-            const newCourseId = courses.length > 0 ? Math.max(...courses.map(c => c.id)) + 1 : 1;
-            
-            // courses 배열에 추가
-            courses.push({ name: courseName, id: newCourseId, students: selectedStudents, lectures: lectures });
-            localStorage.setItem('courses', JSON.stringify(courses));
+            if (editingCourseId !== null) {
+                const course = courses.find(c => c.id === editingCourseId);
+                if (course) {
+                    course.name = courseName;
+                    course.students = selectedStudents;
+                    course.lectures = lectures;
+                    
+                    const tab = document.querySelector(`.course-tab[data-course-id="${editingCourseId}"]`);
+                    if (tab) {
+                        tab.textContent = courseName;
+                    }
 
-            // 탭 추가
-            const addButton = document.querySelector('.add-course-btn');
-            const newTab = document.createElement('button');
-            newTab.className = 'course-tab';
-            newTab.textContent = courseName;
-            newTab.onclick = () => switchCourse(newCourseId);
-            addButton.parentNode.insertBefore(newTab, addButton);
+                    const oldContent = document.querySelector(`.course-content[data-course="${editingCourseId}"]`);
+                    if (oldContent) {
+                        const isActive = oldContent.classList.contains('active');
+                        oldContent.remove();
+                        
+                        const lecturesContent = document.getElementById('lectures-content');
+                        const newContent = createCourseContent(editingCourseId, courseName, lectures, selectedStudents);
+                        if (isActive) {
+                            newContent.classList.add('active');
+                        }
+                        lecturesContent.appendChild(newContent);
 
-            // 콘텐츠 생성
-            const lecturesContent = document.getElementById('lectures-content');
-            const newCourseContent = createCourseContent(newCourseId, courseName, lectures, selectedStudents);
-            lecturesContent.appendChild(newCourseContent);
+                        setupStatusIndicators(editingCourseId);
+                        loadProgress(editingCourseId);
+                        updateStats(editingCourseId);
+                    }
 
-            // 상태 표시 설정
-            setupStatusIndicators(newCourseId);
-            loadProgress(newCourseId);
-            updateStats(newCourseId);
+                    localStorage.setItem('courses', JSON.stringify(courses));
+                }
+            } else {
+                const newCourseId = courses.length > 0 ? Math.max(...courses.map(c => c.id)) + 1 : 1;
+                
+                courses.push({ name: courseName, id: newCourseId, students: selectedStudents, lectures: lectures });
+                localStorage.setItem('courses', JSON.stringify(courses));
 
-            // 모달 닫기
-            closeAddCourseModal();
+                const addButton = document.querySelector('.add-course-btn');
+                const newTab = document.createElement('button');
+                newTab.className = 'course-tab';
+                newTab.textContent = courseName;
+                newTab.setAttribute('data-course-id', newCourseId);
+                newTab.onclick = () => switchCourse(newCourseId);
+                addButton.parentNode.insertBefore(newTab, addButton);
 
-            // 새 강의로 전환
-            switchCourse(newCourseId);
+                const lecturesContent = document.getElementById('lectures-content');
+                const newCourseContent = createCourseContent(newCourseId, courseName, lectures, selectedStudents);
+                lecturesContent.appendChild(newCourseContent);
+
+                setupStatusIndicators(newCourseId);
+                loadProgress(newCourseId);
+                updateStats(newCourseId);
+
+                switchCourse(newCourseId);
+            }
+
+            closeCourseModal();
         }
 
-        // 강의 콘텐츠 생성
         function createCourseContent(courseId, courseName, lectures, students) {
             const content = document.createElement('div');
             content.className = 'course-content';
             content.setAttribute('data-course', courseId);
 
-            // 헤더 그리드 생성
             const headerGrid = `1fr ${students.map(() => '120px').join(' ')}`;
-            const lectureGrid = headerGrid;
 
-            // 통계 카드 생성
             const statsCards = students.map(student => `
                 <div class="user-stats">
                     <h3>${student} 📖</h3>
@@ -1862,21 +1410,33 @@
                 </div>
             `).join('');
 
-            // 강의 목록 생성
-            const lecturesList = lectures.map((lecture, index) => `
-                <div class="lecture" data-lecture="available" style="grid-template-columns: ${lectureGrid}">
-                    <div class="lecture-content">
-                        <div class="lecture-title">${lecture}</div>
-                    </div>
-                    ${students.map(student => `
-                        <div class="checkbox-cell">
-                            <div class="status-indicator" data-user="${student}" data-lecture-id="lecture-${index + 1}"></div>
+            let lectureIndex = 0;
+            const lecturesList = lectures.map((lecture) => {
+                const trimmed = lecture.trim();
+                
+                if (trimmed.startsWith('###')) {
+                    return `<div class="section-header level-3">${trimmed.substring(3).trim()}</div>`;
+                } else if (trimmed.startsWith('##')) {
+                    return `<div class="section-header level-2">${trimmed.substring(2).trim()}</div>`;
+                } else if (trimmed.startsWith('#')) {
+                    return `<div class="section-header level-1">${trimmed.substring(1).trim()}</div>`;
+                } else {
+                    lectureIndex++;
+                    return `
+                        <div class="lecture" data-lecture="available" style="grid-template-columns: ${headerGrid}">
+                            <div class="lecture-content">
+                                <div class="lecture-title">${trimmed}</div>
+                            </div>
+                            ${students.map(student => `
+                                <div class="checkbox-cell">
+                                    <div class="status-indicator" data-user="${student}" data-lecture-id="lecture-${lectureIndex}"></div>
+                                </div>
+                            `).join('')}
                         </div>
-                    `).join('')}
-                </div>
-            `).join('');
+                    `;
+                }
+            }).join('');
 
-            // 초기화 버튼 생성
             const resetButtons = students.map(student => 
                 `<button class="btn btn-reset" onclick="resetCourseProgress(${courseId}, '${student}')">${student} 진도 초기화</button>`
             ).join('');
@@ -1889,7 +1449,10 @@
                 </div>
 
                 <div class="content-wrapper">
-                    <div class="section-title">${courseName}</div>
+                    <div class="section-title">
+                        ${courseName}
+                        <button class="edit-course-btn" onclick="openEditCourseModal(${courseId})">수정</button>
+                    </div>
 
                     <div class="legend">
                         <div class="legend-item">
@@ -1918,7 +1481,7 @@
 
                     <div class="action-buttons">
                         ${resetButtons}
-                        <button class="btn btn-delete" onclick="deleteCourse(${courseId})">이 강의 삭제</button>
+                        ${courseId !== 0 ? `<button class="btn btn-delete" onclick="deleteCourse(${courseId})">이 강의 삭제</button>` : ''}
                     </div>
                 </div>
             `;
@@ -1926,43 +1489,43 @@
             return content;
         }
 
-        // PDF 링크 클릭 방지
-        document.querySelectorAll('.pdf-badge').forEach(badge => {
-            badge.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                alert('PDF 다운로드 기능은 실제 강의 사이트에서 이용 가능합니다.');
-            });
-        });
-
-        // 페이지 로드시 실행
-        setupStatusIndicators(0);
-        loadProgress(0);
-        updateStats(0);
-        loadTodos();
-
-        // 저장된 강의 복원
-        if (courses.length > 1) {
-            const addButton = document.querySelector('.add-course-btn');
+        function initializePage() {
+            const course0 = courses[0];
             const lecturesContent = document.getElementById('lectures-content');
-            
-            courses.slice(1).forEach(course => {
-                const newTab = document.createElement('button');
-                newTab.className = 'course-tab';
-                newTab.textContent = course.name;
-                newTab.onclick = () => switchCourse(course.id);
-                addButton.parentNode.insertBefore(newTab, addButton);
+            const course0Content = createCourseContent(course0.id, course0.name, course0.lectures, course0.students);
+            course0Content.classList.add('active');
+            lecturesContent.appendChild(course0Content);
 
-                // 강의 목록이 저장되어 있지 않으면 빈 배열
-                const lectures = course.lectures || [];
-                const newCourseContent = createCourseContent(course.id, course.name, lectures, course.students);
-                lecturesContent.appendChild(newCourseContent);
+            setupStatusIndicators(0);
+            loadProgress(0);
+            updateStats(0);
 
-                setupStatusIndicators(course.id);
-                loadProgress(course.id);
-                updateStats(course.id);
-            });
+            if (courses.length > 1) {
+                const courseTabs = document.querySelector('.course-tabs');
+                const addButton = document.querySelector('.add-course-btn');
+                
+                courses.slice(1).forEach(course => {
+                    const newTab = document.createElement('button');
+                    newTab.className = 'course-tab';
+                    newTab.textContent = course.name;
+                    newTab.setAttribute('data-course-id', course.id);
+                    newTab.onclick = () => switchCourse(course.id);
+                    courseTabs.insertBefore(newTab, addButton);
+
+                    const lectures = course.lectures || [];
+                    const newCourseContent = createCourseContent(course.id, course.name, lectures, course.students);
+                    lecturesContent.appendChild(newCourseContent);
+
+                    setupStatusIndicators(course.id);
+                    loadProgress(course.id);
+                    updateStats(course.id);
+                });
+            }
+
+            loadTodos();
         }
+
+        initializePage();
     </script>
 </body>
 </html>
