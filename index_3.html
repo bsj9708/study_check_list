@@ -554,53 +554,6 @@
             border-color: #3b82f6;
         }
 
-        .student-management-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .student-management-row .student-checkbox { margin: 0; }
-
-        .student-manage-btn {
-            border: none;
-            border-radius: 6px;
-            padding: 7px 10px;
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .student-edit-btn { background: #dbeafe; color: #1e40af; }
-        .student-edit-btn:hover { background: #bfdbfe; }
-        .student-remove-btn { background: #fee2e2; color: #991b1b; }
-        .student-remove-btn:hover { background: #fecaca; }
-
-        .lecture-date-cell {
-            display: flex;
-            align-items: flex-start;
-            justify-content: center;
-        }
-
-        .lecture-date-input {
-            width: 125px;
-            padding: 8px 9px;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 13px;
-            font-family: inherit;
-            color: #334155;
-            background: #ffffff;
-        }
-
-        .lecture-date-input:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
-        }
-
         .new-student-input {
             display: flex;
             gap: 10px;
@@ -848,31 +801,6 @@
             margin-bottom: 10px;
             opacity: 0.5;
         }
-
-        .progress-cell {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 7px;
-        }
-
-        .student-header-cell {
-            text-align: center;
-            line-height: 1.35;
-        }
-
-        .student-header-cell small {
-            display: block;
-            margin-top: 3px;
-            font-size: 11px;
-            color: #64748b;
-            font-weight: 500;
-        }
-
-        .course-content[data-course="0"] .lecture-header,
-        .course-content[data-course="0"] .lecture {
-            grid-template-columns: 1fr 155px 155px;
-        }
     </style>
 </head>
 <body>
@@ -973,8 +901,8 @@
 
                     <div class="lecture-header">
                         <div>강의</div>
-                        <div class="student-header-cell">서정<small>진도 / 날짜</small></div>
-                        <div class="student-header-cell">예빈<small>진도 / 날짜</small></div>
+                        <div style="text-align: center;">서정</div>
+                        <div style="text-align: center;">예빈</div>
                     </div>
 
                     <div class="lecture" data-lecture="available">
@@ -1373,7 +1301,6 @@
                     <div class="action-buttons">
                         <button class="btn btn-reset" onclick="resetCourseProgress(0, '서정')">서정 진도 초기화</button>
                         <button class="btn btn-reset" onclick="resetCourseProgress(0, '예빈')">예빈 진도 초기화</button>
-                        <button class="btn btn-primary" onclick="openEditCourseModal(0)">강의 수정</button>
                         <button class="btn btn-delete" onclick="deleteCourse(0)">이 강의 삭제</button>
                     </div>
                 </div>
@@ -1454,8 +1381,6 @@
         </div>
     </div>
 
-    
-
     <script>
         let currentCourse = 0;
         let courses = JSON.parse(localStorage.getItem('courses')) || [
@@ -1463,203 +1388,6 @@
         ];
         let allStudents = JSON.parse(localStorage.getItem('allStudents')) || ['서정', '예빈'];
         let editingCourseId = null;
-
-
-        function safeAttr(value) {
-            return String(value)
-                .replace(/&/g, '&amp;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#039;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;');
-        }
-
-        function getProgressData(courseId, user) {
-            const key = `course_${courseId}_${user}`;
-            const raw = JSON.parse(localStorage.getItem(key) || '{}');
-            const normalized = {};
-
-            Object.entries(raw).forEach(([lectureId, value]) => {
-                if (typeof value === 'string') {
-                    normalized[lectureId] = { status: value, date: '' };
-                } else if (value && typeof value === 'object') {
-                    normalized[lectureId] = {
-                        status: value.status || '',
-                        date: value.date || ''
-                    };
-                }
-            });
-
-            return normalized;
-        }
-
-        function setProgressData(courseId, user, data) {
-            const cleaned = {};
-            Object.entries(data).forEach(([lectureId, value]) => {
-                if (value && (value.status || value.date)) {
-                    cleaned[lectureId] = {
-                        status: value.status || '',
-                        date: value.date || ''
-                    };
-                }
-            });
-            localStorage.setItem(`course_${courseId}_${user}`, JSON.stringify(cleaned));
-        }
-
-        function saveLectureDate(courseId, user, lectureId, dateValue) {
-            const progress = getProgressData(courseId, user);
-            progress[lectureId] = progress[lectureId] || { status: '', date: '' };
-            progress[lectureId].date = dateValue || '';
-            setProgressData(courseId, user, progress);
-        }
-
-        function ensureDateInputsForCourse(courseId) {
-            const courseContent = document.querySelector(`.course-content[data-course="${courseId}"]`);
-            if (!courseContent) return;
-
-            const header = courseContent.querySelector('.lecture-header');
-            if (header && !header.dataset.dateHeaderApplied) {
-                const studentHeaders = Array.from(header.children).slice(1);
-                studentHeaders.forEach(cell => {
-                    const name = cell.textContent.trim();
-                    cell.className = 'student-header-cell';
-                    cell.innerHTML = `${safeAttr(name)}<small>진도 / 날짜</small>`;
-                });
-                header.dataset.dateHeaderApplied = 'true';
-            }
-
-            courseContent.querySelectorAll('.checkbox-cell').forEach(cell => {
-                if (cell.querySelector('.lecture-date-input')) return;
-
-                const indicator = cell.querySelector('.status-indicator');
-                if (!indicator) return;
-
-                const user = indicator.getAttribute('data-user');
-                const lectureId = indicator.getAttribute('data-lecture-id');
-
-                cell.classList.add('progress-cell');
-
-                const dateInput = document.createElement('input');
-                dateInput.type = 'date';
-                dateInput.className = 'lecture-date-input';
-                dateInput.setAttribute('data-user', user);
-                dateInput.setAttribute('data-lecture-id', lectureId);
-                dateInput.addEventListener('change', function() {
-                    saveLectureDate(courseId, user, lectureId, this.value);
-                });
-
-                cell.appendChild(dateInput);
-            });
-        }
-
-
-
-        function getDefaultCourseLectures() {
-            return ["Lecture 1: Introduction", "Lecture 2: Neuroanatomy", "Lecture 3: Master Class: Human Brain Dissection", "Lecture 4: Cognitive Neuroscience Methods I", "Lecture 5: Cognitive Neuroscience Methods II", "Lecture 6: Experimental Design", "Lecture 7: Category Selectivity, Controversies, and MVPA", "Lecture 8: Navigation I", "Lecture 9: Navigation II", "Lecture 10: Development, Nature & Nurture I", "Lecture 11: Development, Nature & Nurture II (2018)", "Lecture 12: Brain-Machine Interface", "Lecture 13: Number", "Lecture 14: New Methods Applied to Number", "Lecture 15: Hearing and Speech", "Lecture 16: Music", "Lecture 17: MEG Decoding and RSA", "Lecture 18: Language I", "Lecture 19: Language II", "Lecture 20: Mentalizing and Theory of Mind", "Lecture 21: Brain Networks", "Lecture 22: Experimental Design", "Lecture 23: Deep Networks (2021)", "Lecture 24: Attention and Awareness", "Lecture 25: Recap of Course & Final Review"];
-        }
-
-        courses = courses.map(course => {
-            if (course.id === 0 && (!course.lectures || course.lectures.length === 0)) {
-                return { ...course, lectures: getDefaultCourseLectures(), students: course.students || ['서정', '예빈'] };
-            }
-            return course;
-        });
-        localStorage.setItem('courses', JSON.stringify(courses));
-
-        function migrateStudentName(oldName, newName) {
-            if (oldName === newName) return;
-            allStudents = allStudents.map(student => student === oldName ? newName : student);
-            localStorage.setItem('allStudents', JSON.stringify(allStudents));
-            courses = courses.map(course => {
-                if ((course.students || []).includes(oldName)) {
-                    course.students = course.students.map(student => student === oldName ? newName : student);
-                    const oldKey = `course_${course.id}_${oldName}`;
-                    const newKey = `course_${course.id}_${newName}`;
-                    const oldProgress = JSON.parse(localStorage.getItem(oldKey) || '{}');
-                    const newProgress = JSON.parse(localStorage.getItem(newKey) || '{}');
-                    localStorage.setItem(newKey, JSON.stringify({ ...newProgress, ...oldProgress }));
-                    localStorage.removeItem(oldKey);
-                }
-                return course;
-            });
-            localStorage.setItem('courses', JSON.stringify(courses));
-            const oldTodosKey = `todos_${oldName}`;
-            const newTodosKey = `todos_${newName}`;
-            const oldTodos = JSON.parse(localStorage.getItem(oldTodosKey) || '[]');
-            const newTodos = JSON.parse(localStorage.getItem(newTodosKey) || '[]');
-            localStorage.setItem(newTodosKey, JSON.stringify([...newTodos, ...oldTodos]));
-            localStorage.removeItem(oldTodosKey);
-        }
-
-        function editStudent(oldName) {
-            const newName = prompt('담당자 이름을 수정해주세요.', oldName);
-            if (newName === null) return;
-            const trimmedName = newName.trim();
-            if (!trimmedName) { alert('담당자 이름을 입력해주세요.'); return; }
-            if (trimmedName !== oldName && allStudents.includes(trimmedName)) { alert('이미 존재하는 담당자입니다.'); return; }
-            const selected = Array.from(document.querySelectorAll('#studentsSelector input[type="checkbox"]:checked')).map(cb => cb.value === oldName ? trimmedName : cb.value);
-            migrateStudentName(oldName, trimmedName);
-            renderStudentSelector(selected);
-            rebuildAllCourseViews();
-            renderTodoSections();
-        }
-
-        function deleteStudent(studentName) {
-            const usedCourseNames = courses.filter(course => (course.students || []).includes(studentName)).map(course => course.name);
-            const message = usedCourseNames.length > 0
-                ? `${studentName} 담당자를 삭제하면 아래 강의의 담당자에서도 제외됩니다.\n\n- ${usedCourseNames.join('\n- ')}\n\n계속 진행할까요?`
-                : `${studentName} 담당자를 삭제할까요?`;
-            if (!confirm(message)) return;
-            allStudents = allStudents.filter(student => student !== studentName);
-            localStorage.setItem('allStudents', JSON.stringify(allStudents));
-            courses = courses.map(course => {
-                course.students = (course.students || []).filter(student => student !== studentName);
-                localStorage.removeItem(`course_${course.id}_${studentName}`);
-                return course;
-            });
-            localStorage.setItem('courses', JSON.stringify(courses));
-            localStorage.removeItem(`todos_${studentName}`);
-            const selected = Array.from(document.querySelectorAll('#studentsSelector input[type="checkbox"]:checked')).map(cb => cb.value).filter(value => value !== studentName);
-            renderStudentSelector(selected.length ? selected : allStudents);
-            rebuildAllCourseViews();
-            renderTodoSections();
-        }
-
-        function renderTodoSections() {
-            const container = document.querySelector('.todo-container');
-            if (!container) return;
-            container.innerHTML = '';
-            allStudents.forEach(student => addTodoSection(student));
-            loadTodos();
-        }
-
-        function rebuildAllCourseViews() {
-            const lecturesContent = document.getElementById('lectures-content');
-            if (!lecturesContent) return;
-            document.querySelectorAll('.course-content').forEach(content => content.remove());
-            document.querySelectorAll('.course-tab').forEach(tab => tab.remove());
-            const addButton = document.querySelector('.add-course-btn');
-            courses.forEach(course => {
-                const tab = document.createElement('button');
-                tab.className = 'course-tab';
-                tab.dataset.courseId = course.id;
-                tab.textContent = course.name;
-                tab.onclick = () => switchCourse(course.id);
-                addButton.parentNode.insertBefore(tab, addButton);
-                const lectures = course.lectures || getDefaultCourseLectures();
-                const students = course.students && course.students.length ? course.students : allStudents;
-                const newCourseContent = createCourseContent(course.id, course.name, lectures, students);
-                lecturesContent.appendChild(newCourseContent);
-                setupStatusIndicators(course.id);
-                loadProgress(course.id);
-                updateStats(course.id);
-            });
-            const targetId = courses.some(course => course.id === currentCourse) ? currentCourse : (courses[0] ? courses[0].id : 0);
-            switchCourse(targetId);
-        }
-
-
-
 
         // 메인 탭 전환
         function switchMainTab(tab) {
@@ -1674,9 +1402,6 @@
                 document.getElementById('todos-content').classList.add('active');
             }
         }
-
-
-
 
         // 할 일 입력창 토글
         function toggleTodoInput(user) {
@@ -1862,8 +1587,6 @@
             const courseContent = document.querySelector(`.course-content[data-course="${courseId}"]`);
             if (!courseContent) return;
 
-            ensureDateInputsForCourse(courseId);
-
             const indicators = courseContent.querySelectorAll('.status-indicator');
             indicators.forEach(indicator => {
                 indicator.addEventListener('click', function() {
@@ -1876,42 +1599,36 @@
             });
         }
 
-        // 진도 저장 (상태 + 날짜 포함)
+        // 진도 저장 (상태 포함)
         function saveProgress(courseId, user, lectureId, status) {
-            const progress = getProgressData(courseId, user);
-            progress[lectureId] = progress[lectureId] || { status: '', date: '' };
-            progress[lectureId].status = status || '';
-
-            if (!progress[lectureId].status && !progress[lectureId].date) {
+            const key = `course_${courseId}_${user}`;
+            let progress = JSON.parse(localStorage.getItem(key)) || {};
+            
+            if (status) {
+                progress[lectureId] = status;
+            } else {
                 delete progress[lectureId];
             }
-
-            setProgressData(courseId, user, progress);
+            
+            localStorage.setItem(key, JSON.stringify(progress));
         }
 
-        // 진도/날짜 불러오기
+        // 진도 불러오기
         function loadProgress(courseId) {
             const courseContent = document.querySelector(`.course-content[data-course="${courseId}"]`);
             if (!courseContent) return;
-
-            ensureDateInputsForCourse(courseId);
 
             const course = courses.find(c => c.id === courseId);
             if (!course) return;
 
             course.students.forEach(user => {
-                const progress = getProgressData(courseId, user);
-
-                Object.entries(progress).forEach(([lectureId, data]) => {
+                const key = `course_${courseId}_${user}`;
+                const progress = JSON.parse(localStorage.getItem(key)) || {};
+                
+                Object.entries(progress).forEach(([lectureId, status]) => {
                     const indicator = courseContent.querySelector(`.status-indicator[data-user="${user}"][data-lecture-id="${lectureId}"]`);
-                    if (indicator && data.status) {
-                        indicator.classList.remove('completed', 'in-progress');
-                        indicator.classList.add(data.status);
-                    }
-
-                    const dateInput = courseContent.querySelector(`.lecture-date-input[data-user="${user}"][data-lecture-id="${lectureId}"]`);
-                    if (dateInput) {
-                        dateInput.value = data.date || '';
+                    if (indicator && status) {
+                        indicator.classList.add(status);
                     }
                 });
             });
@@ -1954,9 +1671,9 @@
             currentCourse = courseId;
             
             // 탭 활성화 상태 변경
-            document.querySelectorAll('.course-tab').forEach(tab => {
+            document.querySelectorAll('.course-tab').forEach((tab, index) => {
                 tab.classList.remove('active');
-                if (Number(tab.dataset.courseId) === Number(courseId)) {
+                if (index === courseId) {
                     tab.classList.add('active');
                 }
             });
@@ -2030,17 +1747,25 @@
             }
 
             if (allStudents.includes(newStudentName)) {
-                alert('이미 존재하는 담당자입니다.');
+                alert('이미 존재하는 수강자입니다.');
                 return;
             }
 
             allStudents.push(newStudentName);
             localStorage.setItem('allStudents', JSON.stringify(allStudents));
 
-            const selected = Array.from(document.querySelectorAll('#studentsSelector input[type="checkbox"]:checked')).map(cb => cb.value);
-            selected.push(newStudentName);
-            renderStudentSelector(selected);
-            renderTodoSections();
+            // 체크박스 추가
+            const selector = document.getElementById('studentsSelector');
+            const label = document.createElement('label');
+            label.className = 'student-checkbox';
+            label.innerHTML = `
+                <input type="checkbox" value="${newStudentName}" checked>
+                <span>${newStudentName}</span>
+            `;
+            selector.appendChild(label);
+
+            // 할 일 섹션 추가
+            addTodoSection(newStudentName);
 
             document.getElementById('newStudentName').value = '';
         }
@@ -2051,24 +1776,13 @@
             selector.innerHTML = '';
             allStudents.forEach(student => {
                 const checked = selectedStudents.includes(student) ? 'checked' : '';
-                const row = document.createElement('div');
-                row.className = 'student-management-row';
-                row.innerHTML = `
-                    <label class="student-checkbox ${checked ? 'checked' : ''}">
-                        <input type="checkbox" value="${safeAttr(student)}" ${checked}>
-                        <span>${safeAttr(student)}</span>
-                    </label>
-                    <button type="button" class="student-manage-btn student-edit-btn" onclick="editStudent('${safeAttr(student)}')">수정</button>
-                    <button type="button" class="student-manage-btn student-remove-btn" onclick="deleteStudent('${safeAttr(student)}')">삭제</button>
+                const label = document.createElement('label');
+                label.className = 'student-checkbox';
+                label.innerHTML = `
+                    <input type="checkbox" value="${student}" ${checked}>
+                    <span>${student}</span>
                 `;
-                selector.appendChild(row);
-            });
-
-            selector.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-                checkbox.addEventListener('change', function() {
-                    const label = this.closest('.student-checkbox');
-                    if (label) label.classList.toggle('checked', this.checked);
-                });
+                selector.appendChild(label);
             });
         }
 
@@ -2095,7 +1809,7 @@
             document.getElementById('courseModalTitle').textContent = '강의 수정';
             document.getElementById('courseModalSubmit').textContent = '수정 저장';
             document.getElementById('courseName').value = course.name;
-            document.getElementById('courseLectures').value = (course.lectures || getDefaultCourseLectures()).join('\n');
+            document.getElementById('courseLectures').value = (course.lectures || []).join('\n');
             renderStudentSelector(course.students || allStudents);
             document.getElementById('addCourseModal').classList.add('active');
         }
@@ -2215,7 +1929,7 @@
             content.setAttribute('data-course', courseId);
 
             // 헤더 그리드 생성
-            const headerGrid = `1fr ${students.map(() => '155px').join(' ')}`;
+            const headerGrid = `1fr ${students.map(() => '120px').join(' ')}`;
             const lectureGrid = headerGrid;
 
             // 통계 카드 생성
@@ -2283,9 +1997,8 @@
                             <div class="lecture-title">${escapeHtml(lecture)}</div>
                         </div>
                         ${students.map(student => `
-                            <div class="checkbox-cell progress-cell">
+                            <div class="checkbox-cell">
                                 <div class="status-indicator" data-user="${escapeHtml(student)}" data-lecture-id="lecture-${lectureItemCount}"></div>
-                                <input type="date" class="lecture-date-input" data-user="${escapeHtml(student)}" data-lecture-id="lecture-${lectureItemCount}" onchange="saveLectureDate(${courseId}, '${escapeHtml(student)}', 'lecture-${lectureItemCount}', this.value)">
                             </div>
                         `).join('')}
                     </div>
@@ -2327,7 +2040,7 @@
 
                     <div class="lecture-header" style="grid-template-columns: ${headerGrid}">
                         <div>강의</div>
-                        ${students.map(student => `<div class="student-header-cell">${student}<small>진도 / 날짜</small></div>`).join('')}
+                        ${students.map(student => `<div style="text-align: center;">${student}</div>`).join('')}
                     </div>
 
                     ${lecturesList}
@@ -2353,11 +2066,10 @@
         });
 
         // 페이지 로드시 실행
-        renderStudentSelector(allStudents);
         setupStatusIndicators(0);
         loadProgress(0);
         updateStats(0);
-        renderTodoSections();
+        loadTodos();
 
         // 저장된 강의 복원
         if (courses.length > 1) {
