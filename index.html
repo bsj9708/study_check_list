@@ -1517,7 +1517,11 @@
             sharedStorageCache[key] = String(value);
             window.localStorage.setItem(key, String(value));
             if (remoteStorageRef && !isApplyingRemoteSnapshot) {
-                remoteStorageRef.child(encodeStorageKey(key)).set({ key, value: String(value), updatedAt: Date.now() });
+                remoteStorageRef.doc(encodeStorageKey(key)).set({
+                key,
+                value: String(value),
+                updatedAt: Date.now()
+                });
             }
         }
 
@@ -1525,7 +1529,7 @@
             delete sharedStorageCache[key];
             window.localStorage.removeItem(key);
             if (remoteStorageRef && !isApplyingRemoteSnapshot) {
-                remoteStorageRef.child(encodeStorageKey(key)).remove();
+                remoteStorageRef.doc(encodeStorageKey(key)).delete();
             }
         }
 
@@ -1537,27 +1541,32 @@
             try {
                 firebase.initializeApp(firebaseConfig);
                 firebaseDb = firebase.firestore();
-                remoteStorageRef = firebaseDb.ref(`apps/${APP_ID}/storage`);
+                remoteStorageRef = firebaseDb
+                .collection('apps')
+                .doc(APP_ID)
+                .collection('storage');
                 showSyncStatus('Firebase 연결 중입니다...', 'info');
-                remoteStorageRef.on('value', snapshot => {
-                    isApplyingRemoteSnapshot = true;
-                    const remoteData = snapshot.val() || {};
-                    const nextCache = {};
-                    Object.values(remoteData).forEach(item => {
-                        if (item && item.key) {
-                            nextCache[item.key] = item.value || '';
-                            window.localStorage.setItem(item.key, item.value || '');
-                        }
-                    });
-                    sharedStorageCache = nextCache;
-                    isApplyingRemoteSnapshot = false;
-                    syncStateFromStorage();
-                    showSyncStatus('실시간 공유 연결됨 · 상대방이 체크하면 이 화면에도 자동 반영됩니다.', 'success');
-                }, error => {
-                    isApplyingRemoteSnapshot = false;
-                    showSyncStatus('Firebase 연결 오류: 설정값 또는 Realtime Database 권한을 확인해주세요.', 'error');
-                    console.error(error);
+                remoteStorageRef.onSnapshot(snapshot => {
+                isApplyingRemoteSnapshot = true;
+
+                const nextCache = {};
+                snapshot.forEach(doc => {
+                    const item = doc.data();
+                    if (item && item.key) {
+                        nextCache[item.key] = item.value || '';
+                        window.localStorage.setItem(item.key, item.value || '');
+                    }
                 });
+
+                sharedStorageCache = nextCache;
+                isApplyingRemoteSnapshot = false;
+                syncStateFromStorage();
+                showSyncStatus('실시간 공유 연결됨 · 상대방이 체크하면 이 화면에도 자동 반영됩니다.', 'success');
+            }, error => {
+                isApplyingRemoteSnapshot = false;
+                showSyncStatus('Firebase 연결 오류: Firestore 권한을 확인해주세요.', 'error');
+                console.error(error);
+            });
             } catch (error) {
                 showSyncStatus('Firebase 초기화 오류: firebaseConfig 값을 확인해주세요.', 'error');
                 console.error(error);
