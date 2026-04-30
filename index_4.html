@@ -873,19 +873,6 @@
         .course-content[data-course="0"] .lecture {
             grid-template-columns: 1fr 155px 155px;
         }
-
-        .sync-status {
-            padding: 12px 18px;
-            font-size: 13px;
-            font-weight: 700;
-            border-radius: 0 0 16px 16px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        }
-        .sync-status.info { background: #eff6ff; color: #1e40af; }
-        .sync-status.success { background: #dcfce7; color: #166534; }
-        .sync-status.warning { background: #fef3c7; color: #92400e; }
-        .sync-status.error { background: #fee2e2; color: #991b1b; }
     </style>
 </head>
 <body>
@@ -899,8 +886,6 @@
             <button class="main-tab active" onclick="switchMainTab('lectures')">📖 강의 진도</button>
             <button class="main-tab" onclick="switchMainTab('todos')">✅ 할 일</button>
         </div>
-
-        <div class="sync-status info" id="syncStatus">실시간 공유 준비 중...</div>
 
         <!-- 강의 진도 섹션 -->
         <div class="main-content active" id="lectures-content">
@@ -1471,122 +1456,12 @@
 
     
 
-    <!-- Firebase 실시간 동기화용 SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
-
     <script>
-        /**************************************************************
-         * 실시간 공유 설정
-         * Firebase 콘솔에서 Web App을 만든 뒤 아래 firebaseConfig 값을 교체하세요.
-         **************************************************************/
-        const firebaseConfig = {
-        apiKey: "AIzaSyBYYyzu9IR-l-sXRmsPhx0AXK_UTLXsqu4",
-        authDomain: "my-study-planner-ae115.firebaseapp.com",
-        projectId: "my-study-planner-ae115",
-        storageBucket: "my-study-planner-ae115.firebasestorage.app",
-        messagingSenderId: "654928351480",
-        appId: "1:654928351480:web:28a89cd47050b009ab6b0d"
-        };
-
-
-        const APP_ID = 'study-progress-shared-v1';
-        const FIREBASE_CONFIGURED = firebaseConfig.apiKey && !firebaseConfig.apiKey.includes('여기에');
-        let firebaseDb = null;
-        let remoteStorageRef = null;
-        let isApplyingRemoteSnapshot = false;
-        let sharedStorageCache = {};
-
-        function showSyncStatus(message, type = 'info') {
-            const banner = document.getElementById('syncStatus');
-            if (!banner) return;
-            banner.textContent = message;
-            banner.className = `sync-status ${type}`;
-        }
-
-        function encodeStorageKey(key) {
-            return btoa(unescape(encodeURIComponent(key))).replace(/=/g, '');
-        }
-
-        function storageGetItem(key) {
-            if (Object.prototype.hasOwnProperty.call(sharedStorageCache, key)) return sharedStorageCache[key];
-            return window.localStorage.getItem(key);
-        }
-
-        function storageSetItem(key, value) {
-            sharedStorageCache[key] = String(value);
-            window.localStorage.setItem(key, String(value));
-            if (remoteStorageRef && !isApplyingRemoteSnapshot) {
-                remoteStorageRef.child(encodeStorageKey(key)).set({ key, value: String(value), updatedAt: Date.now() });
-            }
-        }
-
-        function storageRemoveItem(key) {
-            delete sharedStorageCache[key];
-            window.localStorage.removeItem(key);
-            if (remoteStorageRef && !isApplyingRemoteSnapshot) {
-                remoteStorageRef.child(encodeStorageKey(key)).remove();
-            }
-        }
-
-        function initializeFirebaseSync() {
-            if (!FIREBASE_CONFIGURED) {
-                showSyncStatus('Firebase 설정값이 비어 있어 현재는 이 기기에서만 저장됩니다. firebaseConfig를 입력하면 실시간 공유가 켜집니다.', 'warning');
-                return;
-            }
-            try {
-                firebase.initializeApp(firebaseConfig);
-                firebaseDb = firebase.database();
-                remoteStorageRef = firebaseDb.ref(`apps/${APP_ID}/storage`);
-                showSyncStatus('Firebase 연결 중입니다...', 'info');
-                remoteStorageRef.on('value', snapshot => {
-                    isApplyingRemoteSnapshot = true;
-                    const remoteData = snapshot.val() || {};
-                    const nextCache = {};
-                    Object.values(remoteData).forEach(item => {
-                        if (item && item.key) {
-                            nextCache[item.key] = item.value || '';
-                            window.localStorage.setItem(item.key, item.value || '');
-                        }
-                    });
-                    sharedStorageCache = nextCache;
-                    isApplyingRemoteSnapshot = false;
-                    syncStateFromStorage();
-                    showSyncStatus('실시간 공유 연결됨 · 상대방이 체크하면 이 화면에도 자동 반영됩니다.', 'success');
-                }, error => {
-                    isApplyingRemoteSnapshot = false;
-                    showSyncStatus('Firebase 연결 오류: 설정값 또는 Realtime Database 권한을 확인해주세요.', 'error');
-                    console.error(error);
-                });
-            } catch (error) {
-                showSyncStatus('Firebase 초기화 오류: firebaseConfig 값을 확인해주세요.', 'error');
-                console.error(error);
-            }
-        }
-
-        function syncStateFromStorage() {
-            courses = JSON.parse(storageGetItem('courses') || '[]');
-            if (!Array.isArray(courses) || courses.length === 0) {
-                courses = [{ name: 'Cognitive Neuroscience', id: 0, students: ['서정', '예빈'], lectures: getDefaultCourseLectures() }];
-            }
-            allStudents = JSON.parse(storageGetItem('allStudents') || '["서정","예빈"]');
-            if (!Array.isArray(allStudents) || allStudents.length === 0) allStudents = ['서정', '예빈'];
-            courses = courses.map(course => {
-                if (course.id === 0 && (!course.lectures || course.lectures.length === 0)) {
-                    return { ...course, lectures: getDefaultCourseLectures(), students: course.students || ['서정', '예빈'] };
-                }
-                return course;
-            });
-            renderStudentSelector(allStudents);
-            rebuildAllCourseViews();
-            renderTodoSections();
-        }
-
         let currentCourse = 0;
-        let courses = JSON.parse(storageGetItem('courses')) || [
+        let courses = JSON.parse(localStorage.getItem('courses')) || [
             { name: 'Cognitive Neuroscience', id: 0, students: ['서정', '예빈'] }
         ];
-        let allStudents = JSON.parse(storageGetItem('allStudents')) || ['서정', '예빈'];
+        let allStudents = JSON.parse(localStorage.getItem('allStudents')) || ['서정', '예빈'];
         let editingCourseId = null;
 
 
@@ -1601,7 +1476,7 @@
 
         function getProgressData(courseId, user) {
             const key = `course_${courseId}_${user}`;
-            const raw = JSON.parse(storageGetItem(key) || '{}');
+            const raw = JSON.parse(localStorage.getItem(key) || '{}');
             const normalized = {};
 
             Object.entries(raw).forEach(([lectureId, value]) => {
@@ -1628,7 +1503,7 @@
                     };
                 }
             });
-            storageSetItem(`course_${courseId}_${user}`, JSON.stringify(cleaned));
+            localStorage.setItem(`course_${courseId}_${user}`, JSON.stringify(cleaned));
         }
 
         function saveLectureDate(courseId, user, lectureId, dateValue) {
@@ -1689,31 +1564,31 @@
             }
             return course;
         });
-        storageSetItem('courses', JSON.stringify(courses));
+        localStorage.setItem('courses', JSON.stringify(courses));
 
         function migrateStudentName(oldName, newName) {
             if (oldName === newName) return;
             allStudents = allStudents.map(student => student === oldName ? newName : student);
-            storageSetItem('allStudents', JSON.stringify(allStudents));
+            localStorage.setItem('allStudents', JSON.stringify(allStudents));
             courses = courses.map(course => {
                 if ((course.students || []).includes(oldName)) {
                     course.students = course.students.map(student => student === oldName ? newName : student);
                     const oldKey = `course_${course.id}_${oldName}`;
                     const newKey = `course_${course.id}_${newName}`;
-                    const oldProgress = JSON.parse(storageGetItem(oldKey) || '{}');
-                    const newProgress = JSON.parse(storageGetItem(newKey) || '{}');
-                    storageSetItem(newKey, JSON.stringify({ ...newProgress, ...oldProgress }));
-                    storageRemoveItem(oldKey);
+                    const oldProgress = JSON.parse(localStorage.getItem(oldKey) || '{}');
+                    const newProgress = JSON.parse(localStorage.getItem(newKey) || '{}');
+                    localStorage.setItem(newKey, JSON.stringify({ ...newProgress, ...oldProgress }));
+                    localStorage.removeItem(oldKey);
                 }
                 return course;
             });
-            storageSetItem('courses', JSON.stringify(courses));
+            localStorage.setItem('courses', JSON.stringify(courses));
             const oldTodosKey = `todos_${oldName}`;
             const newTodosKey = `todos_${newName}`;
-            const oldTodos = JSON.parse(storageGetItem(oldTodosKey) || '[]');
-            const newTodos = JSON.parse(storageGetItem(newTodosKey) || '[]');
-            storageSetItem(newTodosKey, JSON.stringify([...newTodos, ...oldTodos]));
-            storageRemoveItem(oldTodosKey);
+            const oldTodos = JSON.parse(localStorage.getItem(oldTodosKey) || '[]');
+            const newTodos = JSON.parse(localStorage.getItem(newTodosKey) || '[]');
+            localStorage.setItem(newTodosKey, JSON.stringify([...newTodos, ...oldTodos]));
+            localStorage.removeItem(oldTodosKey);
         }
 
         function editStudent(oldName) {
@@ -1736,14 +1611,14 @@
                 : `${studentName} 담당자를 삭제할까요?`;
             if (!confirm(message)) return;
             allStudents = allStudents.filter(student => student !== studentName);
-            storageSetItem('allStudents', JSON.stringify(allStudents));
+            localStorage.setItem('allStudents', JSON.stringify(allStudents));
             courses = courses.map(course => {
                 course.students = (course.students || []).filter(student => student !== studentName);
-                storageRemoveItem(`course_${course.id}_${studentName}`);
+                localStorage.removeItem(`course_${course.id}_${studentName}`);
                 return course;
             });
-            storageSetItem('courses', JSON.stringify(courses));
-            storageRemoveItem(`todos_${studentName}`);
+            localStorage.setItem('courses', JSON.stringify(courses));
+            localStorage.removeItem(`todos_${studentName}`);
             const selected = Array.from(document.querySelectorAll('#studentsSelector input[type="checkbox"]:checked')).map(cb => cb.value).filter(value => value !== studentName);
             renderStudentSelector(selected.length ? selected : allStudents);
             rebuildAllCourseViews();
@@ -1843,9 +1718,9 @@
             };
 
             // 로컬 스토리지에 저장
-            let todos = JSON.parse(storageGetItem(`todos_${user}`)) || [];
+            let todos = JSON.parse(localStorage.getItem(`todos_${user}`)) || [];
             todos.push(todo);
-            storageSetItem(`todos_${user}`, JSON.stringify(todos));
+            localStorage.setItem(`todos_${user}`, JSON.stringify(todos));
 
             // UI 업데이트
             renderTodoItem(user, todo);
@@ -1875,12 +1750,12 @@
 
         // 할 일 완료/미완료 토글
         function toggleTodo(user, todoId) {
-            let todos = JSON.parse(storageGetItem(`todos_${user}`)) || [];
+            let todos = JSON.parse(localStorage.getItem(`todos_${user}`)) || [];
             const todo = todos.find(t => t.id === todoId);
             
             if (todo) {
                 todo.completed = !todo.completed;
-                storageSetItem(`todos_${user}`, JSON.stringify(todos));
+                localStorage.setItem(`todos_${user}`, JSON.stringify(todos));
 
                 const item = document.querySelector(`#${user}-list .todo-item[data-id="${todoId}"]`);
                 if (item) {
@@ -1899,9 +1774,9 @@
                 return;
             }
 
-            let todos = JSON.parse(storageGetItem(`todos_${user}`)) || [];
+            let todos = JSON.parse(localStorage.getItem(`todos_${user}`)) || [];
             todos = todos.filter(t => t.id !== todoId);
-            storageSetItem(`todos_${user}`, JSON.stringify(todos));
+            localStorage.setItem(`todos_${user}`, JSON.stringify(todos));
 
             const item = document.querySelector(`#${user}-list .todo-item[data-id="${todoId}"]`);
             if (item) {
@@ -1939,7 +1814,7 @@
                 const list = document.getElementById(`${user}-list`);
                 if (list) {
                     list.innerHTML = '';
-                    const todos = JSON.parse(storageGetItem(`todos_${user}`)) || [];
+                    const todos = JSON.parse(localStorage.getItem(`todos_${user}`)) || [];
                     todos.forEach(todo => renderTodoItem(user, todo));
                     updateEmptyState(user);
                 }
@@ -2100,7 +1975,7 @@
         function resetCourseProgress(courseId, user) {
             if (confirm(`정말로 ${user}님의 모든 진도를 초기화하시겠습니까?`)) {
                 const key = `course_${courseId}_${user}`;
-                storageRemoveItem(key);
+                localStorage.removeItem(key);
                 
                 const courseContent = document.querySelector(`.course-content[data-course="${courseId}"]`);
                 if (courseContent) {
@@ -2126,7 +2001,7 @@
                 // 로컬 스토리지에서 진도 데이터 삭제
                 if (course) {
                     course.students.forEach(user => {
-                        storageRemoveItem(`course_${courseId}_${user}`);
+                        localStorage.removeItem(`course_${courseId}_${user}`);
                     });
                 }
 
@@ -2139,7 +2014,7 @@
 
                 // courses 배열에서 제거
                 courses = courses.filter(c => c.id !== courseId);
-                storageSetItem('courses', JSON.stringify(courses));
+                localStorage.setItem('courses', JSON.stringify(courses));
 
                 // 첫 번째 강의로 전환
                 switchCourse(0);
@@ -2160,7 +2035,7 @@
             }
 
             allStudents.push(newStudentName);
-            storageSetItem('allStudents', JSON.stringify(allStudents));
+            localStorage.setItem('allStudents', JSON.stringify(allStudents));
 
             const selected = Array.from(document.querySelectorAll('#studentsSelector input[type="checkbox"]:checked')).map(cb => cb.value);
             selected.push(newStudentName);
@@ -2277,7 +2152,7 @@
                     students: selectedStudents,
                     lectures: lectures
                 };
-                storageSetItem('courses', JSON.stringify(courses));
+                localStorage.setItem('courses', JSON.stringify(courses));
 
                 // 탭 이름 수정
                 const tab = document.querySelector(`.course-tab[data-course-id="${editingCourseId}"]`);
@@ -2305,7 +2180,7 @@
 
             // courses 배열에 추가
             courses.push({ name: courseName, id: newCourseId, students: selectedStudents, lectures: lectures });
-            storageSetItem('courses', JSON.stringify(courses));
+            localStorage.setItem('courses', JSON.stringify(courses));
 
             // 탭 추가
             const addButton = document.querySelector('.add-course-btn');
@@ -2507,8 +2382,6 @@
                 updateStats(course.id);
             });
         }
-
-        initializeFirebaseSync();
     </script>
 </body>
 </html>
