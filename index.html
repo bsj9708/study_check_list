@@ -1536,7 +1536,7 @@
             }
             try {
                 firebase.initializeApp(firebaseConfig);
-                firebaseDb = firebase.database();
+                firebaseDb = firebase.firestore();
                 remoteStorageRef = firebaseDb.ref(`apps/${APP_ID}/storage`);
                 showSyncStatus('Firebase 연결 중입니다...', 'info');
                 remoteStorageRef.on('value', snapshot => {
